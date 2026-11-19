@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // TARGET and HAPPENED are write-only through the Cloud Functions callables.
+    // These rules deny every direct client write, including forged date fields.
+    match /users/{uid}/days/{date}/target {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /users/{uid}/days/{date}/happened {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /users/{uid}/days/{date} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // Other per-user data (e.g. profile) is owner-readable, also function-managed.
+    match /users/{uid}/{rest=**} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

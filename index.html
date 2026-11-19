@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Apply the persisted theme before styles load so there is no flash.
+      (function () {
+        try {
+          var stored = localStorage.getItem('daymark:theme:v1');
+          var dark = stored === 'dark';
+          document.documentElement.classList.toggle('dark', dark);
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? '#13161e' : '#ffffff');
+        } catch (error) {
+          /* localStorage may be unavailable; the app falls back to light. */
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Daymark — a calm, minimal journal for your daily learning and growth."
+    />
+    <title>Daymark</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
